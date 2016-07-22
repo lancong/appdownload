@@ -32,7 +32,7 @@ def openUrl(url):
 def writeText(data, fileParentPath, fileName, mode="w", newline=False):
     mkdirs(fileParentPath)
 
-    nowFilePath = fileParentPath + fileName
+    nowFilePath = os.path.join(fileParentPath, fileName)
     writer = None
     try:
         writer = codecs.open(nowFilePath, mode, "utf-8")
@@ -46,6 +46,18 @@ def writeText(data, fileParentPath, fileName, mode="w", newline=False):
         if writer is not None:
             writer.close()
     return
+
+
+def getfilelines(filepath):
+    texts = codecs.open(filepath, "r", "utf-8")
+    try:
+        count = 0
+        if os.path.exists(filepath) and os.path.isfile(filepath):
+            for text in texts:
+                count += 1
+    finally:
+        texts.close()
+    return count
 
 
 # create new dir
@@ -63,15 +75,18 @@ def readTextAll(filePath):
         if valid(lines):
             return lines
 
+
 def readTextAll2(filePath):
     if os.path.exists(filePath):
         return open(filePath).readlines()
+
 
 def readTextAll3(filePath):
     if os.path.exists(filePath):
         reader = codecs.open(filePath, "r", "utf-8")
         # reader.close()
         return reader
+
 
 # read text from file
 def readText(filePath):
@@ -101,7 +116,7 @@ def validList(obj):
 def downLoadFile(downUrl, filePath, fileName, suffix=".apk"):
     mkdirs(filePath)
     try:
-        path = filePath + fileName + suffix
+        path = os.path.join(filePath, fileName + suffix)
         # 下载方法
         urlretrieve(downUrl, path)
         return True
@@ -114,7 +129,7 @@ def downLoadFile(downUrl, filePath, fileName, suffix=".apk"):
 def downLoadFile2(downUrl, filePath, fileName, suffix=".apk"):
     mkdirs(filePath)
     try:
-        path = filePath + fileName + suffix
+        path = os.path.join(filePath, fileName + suffix)
         # 下载方法
         r = requests.get(downUrl)
         with open(path, "wb") as file:
@@ -152,6 +167,7 @@ def getTime_yyyymmddhhmmss():
 # 得到时间格式 20160202112222
 def getTime_yyyymmddhhmmss2():
     return time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
+
 
 # 生成随机整形数字
 def general_randint(min, max):

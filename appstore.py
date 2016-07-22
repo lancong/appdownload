@@ -71,7 +71,7 @@ class AppStore_wandoujia(object):
 
     # 设置搜索app名称
     def setSearchAppName(self, appName):
-        self.appName = appName
+        self.appName = appName.strip()
 
     # 设置是否保存下载结果(默认开启)
     def setSaveResult(self, isSave):
@@ -82,8 +82,8 @@ class AppStore_wandoujia(object):
         if baseutil.valid(self.targetDir):
             downUrl = self.judgeResult()
             if (baseutil.valid(downUrl)):
-                print(self.appName + ",下载地址: " + downUrl)
-                isSucceed = baseutil.downLoadFile(downUrl, self.targetDir, self.appName)
+                # print(self.appName + ",下载地址: " + downUrl)
+                isSucceed = baseutil.downLoadFile(downUrl, self.targetDir + baseutil.getTime_yyyymmdd(), self.appName)
 
                 pos1 = downUrl.index("apps") + 5
                 pos2 = downUrl.index("download") - 1
@@ -95,18 +95,21 @@ class AppStore_wandoujia(object):
                     retext = "成功"
                     data = str(
                             baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
-                    baseutil.writeText(data, config.LOG_SAVE_PATH, self.getsucceedfilename(), "a", True)
+                    baseutil.writeText(data, config.LOG_SAVE_PATH + baseutil.getTime_yyyymmdd(),
+                                       self.getsucceedfilename(), "a", True)
                 else:
                     retext = "失败或者错误"
                     data = str(
                             baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
-                    baseutil.writeText(data, config.LOG_SAVE_PATH, self.getfailedfilename(), "a", True)
+                    baseutil.writeText(data, config.LOG_SAVE_PATH + baseutil.getTime_yyyymmdd(),
+                                       self.getfailedfilename(), "a", True)
 
                 print(str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",下载" + retext)
 
             else:
                 data = str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",未找到,取消下载"
-                baseutil.writeText(data, config.LOG_SAVE_PATH, self.getnotfindfilename(), "a", True)
+                baseutil.writeText(data, config.LOG_SAVE_PATH + baseutil.getTime_yyyymmdd(), self.getnotfindfilename(),
+                                   "a", True)
                 print(data)
         else:
             print(str(baseutil.getTime_yyyymmddhhmmss()) + " 请设置下载文件存储路径!!!")
@@ -117,7 +120,7 @@ class AppStore_wandoujia(object):
 if __name__ == '__main__':
     # --- base func test
     appStore = AppStore_wandoujia()
-    appStore.setSearchAppName("fafdfafsaf")
+    appStore.setSearchAppName("QQ")
     # print(appStore.judgeResult())
     appStore.setSaveFilePlace()
     appStore.execute()
