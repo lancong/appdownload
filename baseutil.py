@@ -10,11 +10,14 @@ import os
 import random
 import time
 import codecs
+import urllib
+
 import requests
+import sys
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote
-from urllib.request import urlretrieve
+from urllib.request import urlretrieve, Request
 
 
 # open url and return beautifulsoup
@@ -118,7 +121,12 @@ def downLoadFile(downUrl, filePath, fileName, suffix=".apk"):
     try:
         path = os.path.join(filePath, fileName + suffix)
         # 下载方法
-        urlretrieve(downUrl, path)
+        # local_down, headers = urlretrieve(downUrl, path, schedule)
+        local_down, headers = urlretrieve(downUrl, path)
+        down = open(local_down)
+        down.close()
+        # print("\t\n")
+        # urlretrieve(downUrl, path, schedule)
         return True
     except:
         # print(getTime_yyyymmddhhmmss() + " " + fileName + " 下载错误")
@@ -131,6 +139,7 @@ def downLoadFile2(downUrl, filePath, fileName, suffix=".apk"):
     try:
         path = os.path.join(filePath, fileName + suffix)
         # 下载方法
+
         r = requests.get(downUrl)
         with open(path, "wb") as file:
             file.write(r.content)
@@ -138,6 +147,14 @@ def downLoadFile2(downUrl, filePath, fileName, suffix=".apk"):
     except:
         # print(getTime_yyyymmddhhmmss() + " " + fileName + " 下载错误")
         return False
+
+
+# a:已经下载的数据大小; b:数据大小; c:远程文件大小;
+def schedule(a, b, c):
+    per = 100.0 * a * b / c
+    if per > 100: per = 100
+    print('{:.2f}%'.format(per))
+    sys.stdout.flush()
 
 
 def URLEncoder(obj):
