@@ -4,16 +4,17 @@
 
 现在以豌豆荚网站为基础构建的app搜索,默认结果以app的名称为准
 
+后添加360下载
+
 '''
-import threading
 
 import config
 import baseutil
 
 
-# 360搜索及下载
+# 360搜索及download
 # http://zhushou.360.cn/search/index/?kw=%E5%A4%A9%E5%A4%A9%E5%8A%A8%E5%90%AC
-class appstore_360(object):
+class AppStore_360(object):
     def __init__(self):
         # self.appInfo = appinfo.AppInfo()
         self.appName = ""
@@ -27,11 +28,11 @@ class appstore_360(object):
     def setsavefileplace(self, targetDir=config.app_save_path):
         self.targetDir = targetDir
 
-    # 得到下载正确的日志文件名称
+    # 得到download正确的日志文件名称
     def getsucceedfilename(self):
         return str(baseutil.getTime_yyyymmdd()) + "_appdown_succeed.log"
 
-    # 得到下载失败的日志文件名称
+    # 得到download失败的日志文件名称
     def getfailedfilename(self):
         return str(baseutil.getTime_yyyymmdd()) + "_appdown_failed.log"
 
@@ -44,7 +45,7 @@ class appstore_360(object):
         encodeAppName = baseutil.URLEncoder(self.appName)
         return self.appstroe_360 + encodeAppName
 
-    # 判断搜索结果是否可以下载
+    # 判断搜索结果是否可以download
     def judgeresult(self):
         searchResult = baseutil.openUrl(self.generalsearchparm())
         allResults = searchResult.find("div", {"class": "main"})
@@ -69,16 +70,16 @@ class appstore_360(object):
     def setsearchappname(self, appName):
         self.appName = appName.strip()
 
-    # 设置是否保存下载结果(默认开启)
+    # 设置是否保存download结果(默认开启)
     def setsaveresult(self, isSave):
         self.isSave = isSave
 
-    # 执行下载
+    # 执行download
     def execute(self):
         if baseutil.valid(self.targetDir):
             downurl = self.judgeresult()
             if (baseutil.valid(downurl)):
-                # print(self.appName + ",下载地址: " + downurl)
+                # print(self.appName + ",download地址: " + downurl)
                 isSucceed = baseutil.downLoadFile(downurl, self.targetDir + baseutil.getTime_yyyymmdd(), self.appName)
 
                 pos1 = downurl.rfind("/") + 1
@@ -89,35 +90,35 @@ class appstore_360(object):
                     packageName = "unknow"
 
                 data = ""
-                retext = "成功"
+                retext = "succeed"
                 if isSucceed:
-                    retext = "成功"
+                    retext = "succeed"
                     data = str(
-                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
+                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ", download" + retext
                     baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                        self.getsucceedfilename(), "a", True)
                 else:
-                    retext = "失败或者错误"
+                    retext = "failed or error"
                     data = str(
-                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
+                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ", download" + retext
                     baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                        self.getfailedfilename(), "a", True)
 
-                print(str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",下载" + retext)
+                # print(str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ", download" + retext)
 
             else:
-                data = str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",未找到,取消下载"
+                data = str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ", not find, cancel download"
                 baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                    self.getnotfindfilename(),
                                    "a", True)
-                print(data)
+                # print(data)
         else:
-            print(str(baseutil.getTime_yyyymmddhhmmss()) + " 请设置下载文件存储路径!!!")
+            print(str(baseutil.getTime_yyyymmddhhmmss()) + " please set save path !!!")
 
 
-# 豌豆荚搜索及下载
+# 豌豆荚搜索及download
 # http://www.wandoujia.com/search?key=GO%E6%A1%8C%E9%9D%A2&source=search
-class appstore_wandoujia(object):
+class AppStore_WanDouJia(object):
     def __init__(self):
         # self.appInfo = appinfo.AppInfo()
         self.appName = ""
@@ -131,11 +132,11 @@ class appstore_wandoujia(object):
     def setsavefileplace(self, targetDir=config.app_save_path):
         self.targetDir = targetDir
 
-    # 得到下载正确的日志文件名称
+    # 得到download正确的日志文件名称
     def getsucceedfilename(self):
         return str(baseutil.getTime_yyyymmdd()) + "_appdown_succeed.log"
 
-    # 得到下载失败的日志文件名称
+    # 得到download失败的日志文件名称
     def getfailedfilename(self):
         return str(baseutil.getTime_yyyymmdd()) + "_appdown_failed.log"
 
@@ -148,7 +149,7 @@ class appstore_wandoujia(object):
         encodeAppName = baseutil.URLEncoder(self.appName)
         return self.appstroe_wnadoujia + "?key=" + encodeAppName + "&source=search"
 
-    # 判断搜索结果是否可以下载
+    # 判断搜索结果是否可以download
     def judgeresult(self):
         searchResult = baseutil.openUrl(self.generalsearchparm())
         allResults = searchResult.find("ul", {"id": "j-search-list"})
@@ -177,49 +178,53 @@ class appstore_wandoujia(object):
     def setsearchappname(self, appName):
         self.appName = appName.strip()
 
-    # 设置是否保存下载结果(默认开启)
+    # 设置是否保存download结果(默认开启)
     def setsaveresult(self, isSave):
         self.isSave = isSave
 
-    # 执行下载
+    # 执行download
     def execute(self):
         if baseutil.valid(self.targetDir):
             downUrl = self.judgeresult()
+            app_name = self.appName
             if (baseutil.valid(downUrl)):
-                # print(self.appName + ",下载地址: " + downUrl)
-                isSucceed = baseutil.downLoadFile(downUrl, self.targetDir + baseutil.getTime_yyyymmdd(), self.appName)
+                # print(self.appName + ",download地址: " + downUrl)
+                isSucceed = baseutil.downLoadFile(downUrl, self.targetDir + baseutil.getTime_yyyymmdd(), app_name)
 
                 pos1 = downUrl.index("apps") + 5
                 pos2 = downUrl.index("download") - 1
                 packageName = downUrl[pos1:pos2]
 
                 data = ""
-                retext = "成功"
+                retext = "succeed"
+
                 if isSucceed:
-                    retext = "成功"
+                    retext = "succeed"
                     data = str(
-                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
+                            baseutil.getTime_yyyymmddhhmmss()) + "," + app_name + "," + packageName + ",download" + retext
                     baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                        self.getsucceedfilename(), "a", True)
                 else:
-                    retext = "失败或者错误"
+                    retext = "failed or error"
+
                     data = str(
-                            baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + "," + packageName + ",下载" + retext
+                            baseutil.getTime_yyyymmddhhmmss()) + "," + app_name + "," + packageName + ",download" + retext
                     baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                        self.getfailedfilename(), "a", True)
 
-                print(str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",下载" + retext)
+                # baseutil.printlog(app_name + ", download" + retext)
 
             else:
-                data = str(baseutil.getTime_yyyymmddhhmmss()) + "," + self.appName + ",未找到,取消下载"
+                data = str(baseutil.getTime_yyyymmddhhmmss()) + "," + app_name + ", not find, cancel download"
+
                 baseutil.writeText(data, config.down_log_save_path + baseutil.getTime_yyyymmdd(),
                                    self.getnotfindfilename(),
                                    "a", True)
-                print(data)
-        else:
-            print(str(baseutil.getTime_yyyymmddhhmmss()) + " 请设置下载文件存储路径!!!")
 
-    pass
+                # baseutil.printlog(app_name + ' not failed or error')
+        else:
+
+            baseutil.printlog("please set save path !!!")
 
 
 if __name__ == '__main__':
@@ -237,7 +242,7 @@ if __name__ == '__main__':
 
     # --- appstore 360
 
-    appstore360 = appstore_360()
+    appstore360 = AppStore_360()
     appstore360.setsearchappname("360清理大师")
     # appstore360.judgeresult()
     appstore360.setsavefileplace()

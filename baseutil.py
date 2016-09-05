@@ -10,25 +10,39 @@ import os
 import random
 import time
 import codecs
-import urllib
-
 import requests
 import sys
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote
-from urllib.request import urlretrieve, Request
+from urllib.request import urlretrieve
+import config
 
 
 # open url and return beautifulsoup
 def openUrl(url):
     session = requests.session()
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.86 Safari/537.36",
+        "User-Agent": getua('pc'),
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"}
+    # headers = {
+    #     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.86 Safari/537.36",
+    #     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"}
     req = session.get(url, headers=headers)
     req.encoding = "utf-8"
     return BeautifulSoup(req.text, "html.parser")
+
+
+# user-agent(mobile,pc)
+def getua(perform):
+    ua = []
+    if perform == 'pc':
+        ua = config.user_agent_pc
+    else:
+        ua = config.user_agent_mobile
+
+    index = randnum(0, len(ua) - 1)
+    return ua[index]
 
 
 # write text to file (default mode 'w')
@@ -187,8 +201,54 @@ def getTime_yyyymmddhhmmss2():
 
 
 # 生成随机整形数字
-def general_randint(min, max):
+def randnum(min, max):
     return random.randint(min, max)
+
+
+def printlog(msg):
+    print(getTime_yyyymmddhhmmss() + " " + msg)
+
+
+# 分发任务
+def dispatchtask(lists, threadnum):
+    # 单线程不拆分任务
+    if threadnum < 1:
+        return lists
+
+    # list size
+    listsize = len(lists)
+
+    if threadnum > listsize:
+        return lists
+
+    single_task_num = int(listsize / threadnum)
+
+    # 任务总列表
+    tasklists = []
+    # 任务容器
+    task = []
+
+    count = 0
+    taskindex = 0
+
+    for index in range(listsize):
+        task.append(lists[index])
+        count += 1
+        if count == single_task_num and len(tasklists) < threadnum:
+            tasklists.append(task)
+            task = []
+            count = 0
+        elif len(tasklists) == threadnum:
+            tasklists[taskindex].append(lists[index])
+            taskindex += 1
+
+    printlog("\t\nthread queue: " + str(len(tasklists)) + '\t\n')
+
+    return tasklists
+
+
+def isfileexist(file):
+    return os.path.exists(file)
 
 
 if __name__ == '__main__':
